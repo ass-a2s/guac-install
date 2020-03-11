@@ -1,66 +1,119 @@
 # guac-install
 
-Script for installing Guacamole 1.0.0 on Ubuntu 16.04 or newer with MySQL. It should also work on pure Debian >= 7 but I have not tested. Feel free to provide freeback!
+Script for installing Guacamole 1.1.0 on Ubuntu 16.04 or newer (with MySQL, or remote MySQL). It should also work on pure [Debian](https://www.debian.org/), [Raspbian](https://www.raspberrypi.org/downloads/raspbian/) or [Kali Linux](https://www.kali.org/). I have tested this with Debian 10.3.0 (Buster). **If other versions don't work please open an issue.** It is likely due to a required library having a different name.
 
 Run script, enter MySQL Root Password and Guacamole User password. Guacamole User is used to connect to the Guacamole Database.
 
-The script attempts to install tomcat8 if the available version is 8.5.x or newer, if tomcat8 is only 8.0.x it will fall back to tomcat7. If you want to manually specify a tomcat version there's a commented out line you can modify at line #73. Have at it.
+The script attempts to install `tomcat9` by default (it will fall back on `tomcat8` **if the available version is 8.5.x or newer**, otherwise it will fall back to `tomcat7`). If you want to manually specify a tomcat version there's a commented out line you can modify. Have at it.
 
 If you're looking to also have NGINX / Let's Encrypt / HTTPS click [HERE](https://github.com/bigredthelogger/guacamole)
 
+## MFA/2FA
+
+By default the script will not install MFA support (QR code for Google/Microsoft Authenticator, Duo Mobile, etc. or Duo Push), if you do want MFA support you can use the `-t` or `--totp` or for Duo `-d` or `--duo` flags on the command line. Or modify the script variables `installTOTP=true` or `installDuo=true`. **Do not install both**
+
 ## How to Run:
 
 ### Download file directly from here:
 
-<code>wget https://raw.githubusercontent.com/MysticRyuujin/guac-install/master/guac-install.sh</code>
+`wget https://git.io/fxZq5`
 
 ### Make it executable:
 
-<code>chmod +x guac-install.sh</code>
+`chmod +x guac-install.sh`
 
 ### Run it as root:
 
 Interactive (asks for passwords):
 
-<code>./guac-install.sh</code>
+`./guac-install.sh`
 
-Non-Interactive (passwords provided via cli):
+Non-Interactive (values provided via cli):
 
-<code>./guac-install.sh --mysqlpwd password --guacpwd password</code>
+`./guac-install.sh --mysqlpwd password --guacpwd password --nomfa --installmysql`
 
 OR
 
-<code>./guac-install.sh -m password -g password</code>
+`./guac-install.sh -r password -gp password -o -i`
 
-Once installation is done you can access guacamole by browsing to: http://<host_or_ip>:8080/guacamole/
-The default credentials are guacadmin as both username and password. Please change them or disable guacadmin after install!
+Once installation is done you can access Guacamole by browsing to: http://<host_or_ip>:8080/guacamole/
+The default credentials are `guacadmin` as both username and password. Please change them or disable guacadmin after install!
 
 # guac-upgrade
-Script for upgrading currently installed Guacamole instance (previously installed via this script/guide)
 
+Script for upgrading currently installed Guacamole instance (previously installed via this script/guide).  This will also now update the TOTP or Duo extensions if used.
 
 If looks for the tomcat folder in /etc/ (E.G. `/etc/tomcat7` or `/etc/tomcat8`) hopefully that works to identify the correct tomcat version/path :smile: I'm open to suggestions/pull requests for a cleaner method.
 
+## All Switches
+
+Install MySQL:
+
+`-i or --installmysql`
+
+Do *NOT* install MySQL:
+
+`-n or --nomysql`
+
+MySQL Host:
+
+`-h or --mysqlhost`
+
+MySQL Port:
+
+`-p or --mysqlport`
+
+MySQL Root Password:
+
+`-r or --mysqlpwd`
+
+Guacamole Database:
+
+`-db or --guacdb`
+
+Guacamole User:
+
+`-gu or --guacuser`
+
+Guacamole User Password:
+
+`-gp or --guacpwd`
+
+No MFA (No TOTP + Duo):
+
+`-o or --nomfa`
+
+Install TOTP:
+
+`-t or --totp`
+
+Install Duo:
+
+`-d or --duo`
+
+NOTE: Only the switches for MySQL Host, MySQL Port and Guacamole Database are available in the upgrade script.
+
 ## WARNING
 
-I don't think this script is working anymore. Way too many reports that 0.9.14 -> 1.0.0 are not working. I don't know why.
+- Upgrading from 0.9.14 -> 1.1.0 has not been tested, only 1.0.0 -> 1.1.0.
+- Switches have changed and additional ones have been added!
 
 ## How to Run:
 
 ### Download file directly from here:
 
-<code>wget https://raw.githubusercontent.com/MysticRyuujin/guac-install/master/guac-upgrade.sh</code>
+`wget https://raw.githubusercontent.com/MysticRyuujin/guac-install/master/guac-upgrade.sh`
 
 ### Make it executable:
 
-<code>chmod +x guac-upgrade.sh</code>
+`chmod +x guac-upgrade.sh`
 
 ### Run it as root:
 
 Interactive (asks for passwords):
 
-<code>./guac-upgrade.sh</code>
+`./guac-upgrade.sh`
 
-Non-Interactive (password provided via cli):
+Non-Interactive (MySQL root password provided via cli):
 
-<code>./guac-upgrade.sh --mysqlpwd password</code>
+`./guac-upgrade.sh --mysqlpwd password`
